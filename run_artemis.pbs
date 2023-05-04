@@ -14,8 +14,8 @@ cd $PBS_O_WORKDIR
 # If these are not set, it defaults to your home foler which will fill up very quickly.
 export SINGULARITY_CACHEDIR=`pwd`
 export SINGULARITY_TMPDIR=`pwd`
-singularity build spaceranger.img docker://sydneyinformaticshub/spaceranger:centos7
+singularity build matlab.img docker://sydneyinformaticshub/matlab:r2021
 
 ### 2 EXAMPLE WORKFLOW ###
 # Remove the build commands above and execute:
-singularity run --bind /project:/project sapceranger.img /bin/bash -c "export TENX_IGNORE_DEPRECATED_OS=1; spaceranger testrun --id=tiny"
+singularity run --bind /project:/project matlab.img /bin/bash -c "matlab test.m"
