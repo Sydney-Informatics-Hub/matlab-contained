@@ -1,6 +1,12 @@
-# Space Ranger Container
+# Matlab Container
 
-Docker/Singularity image to run [Space Ranger](https://support.10xgenomics.com/spatial-gene-expression/software/pipelines/latest/what-is-space-ranger) on Centos 6.9 kernel 
+Docker/Singularity image to run [Matlab](https://github.com/mathworks-ref-arch/getting-started-with-matlab-in-docker) on Centos 6.9 kernel.
+
+Mathworks provides Matlab as [Docker containers](https://hub.docker.com/r/mathworks/matlab) but unfortunatley, they all have later base operating system versions so will not work (even in a container) on Artemis. This repo has modified the Dockerfiles provided by Mathworks to run on our old Centos 6.9 cluster. It uses a University license file, so it can only run on the Sydney ICT network (on campus or via VPN).
+
+The install script currently only has limited toolboxes, but can be modified (see the *installer_input.txt*).
+
+Rember to pass `--gpus all` if needing gpu!
 
 
 If you have used this work for a publication, you must acknowledge SIH, e.g: "The authors acknowledge the technical assistance provided by the Sydney Informatics Hub, a Core Research Facility of the University of Sydney."
@@ -12,9 +18,9 @@ Put this repo on Artemis e.g.
 
 ```
 cd /project/<YOUR_PROJECT>
-git clone https://github.com/Sydney-Informatics-Hub/spaceranger-contained.git
+git clone https://github.com/Sydney-Informatics-Hub/matlab-contained.git
 ```
-Then `cd spaceranger-contained` and modify the `run_artemis.pbs` script and launch with `qsub run_artemis.pbs`.
+Then `cd matlab-contained` and modify the `run_artemis.pbs` script and launch with `qsub run_artemis.pbs`.
 
 Otherwise here are the full instructions for getting there....
 
@@ -24,21 +30,21 @@ Otherwise here are the full instructions for getting there....
 ## Build with docker
 Check out this repo then build the Docker file.
 ```
-sudo docker build . -t sydneyinformaticshub/spaceranger:centos7
+sudo docker build . -t sydneyinformaticshub/matlab:r2021a
 ```
 
 ## Run with docker.
 To run this, mounting your current host directory in the container directory, at /project, and execute a run on the test images (that live in the container) run:
 ```
-sudo docker run -it -v `pwd`:/project sydneyinformaticshub/spaceranger:centos7 /bin/bash -c "spaceranger sitecheck > /project/sitecheck.txt"
+sudo docker run -it -v `pwd`:/project sydneyinformaticshub/matlab:r2021a /bin/bash -c "matlab test.m"
 ```
 
 ## Push to docker hub
 ```
-sudo docker push sydneyinformaticshub/spaceranger:centos7
+sudo docker push sydneyinformaticshub/matlab:r2021a
 ```
 
-See the repo at [https://hub.docker.com/r/sydneyinformaticshub/spaceranger](https://hub.docker.com/r/sydneyinformaticshub/spaceranger)
+See the repo at [https://hub.docker.com/r/sydneyinformaticshub/matlab](https://hub.docker.com/r/sydneyinformaticshub/matlab)
 
 
 ## Build with singularity
@@ -46,11 +52,11 @@ See the repo at [https://hub.docker.com/r/sydneyinformaticshub/spaceranger](http
 export SINGULARITY_CACHEDIR=`pwd`
 export SINGULARITY_TMPDIR=`pwd`
 
-singularity build spaceranger.img docker://sydneyinformaticshub/spaceranger:centos7
+singularity build matlab.img docker://sydneyinformaticshub/matlab:r2021a
 ```
 
 ## Run with singularity
 To run the singularity image (noting singularity mounts the current folder by default)
 ```
-singularity run --bind /project:/project spaceranger.img /bin/bash -c "cd "$PBS_O_WORKDIR" && spaceranger sitecheck > sitecheck.txt"
+singularity run --bind /project:/project matlab.img /bin/bash -c "cd "$PBS_O_WORKDIR" && matlab test.m"
 ```
